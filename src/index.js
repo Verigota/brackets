@@ -1,49 +1,33 @@
 module.exports = function check(str, bracketsConfig) {
-  if (str.length % 2 > 0){
-    return false;
-  }
+  const stack = [];
 
-  const arrFromStr = Array.from (str);
-  
-  for (el of bracketsConfig) {
-    if (el[0] === el[1]) {
-      const arrWithEqBrackets = arrFromStr.filter( x => x === el[0])
-      if (arrWithEqBrackets.length % 2 > 0) {
-        return false;
-      }
-    }  else { 
-      const arrWithOpen = arrFromStr.filter( x => x === el[0]);
-      const arrWithClose = arrFromStr.filter( x => x === el[1]);
+ for (let i = 0; i < str.length; i++) {
 
-      if (arrWithOpen.length !== arrWithClose.length) {
-        return false;
-      }
-
-      if (arrFromStr.lastIndexOf(el[0]) > arrFromStr.lastIndexOf(el[1])) {
-        return false;
-      }
-
-      do {
-        let inOpen = arrFromStr.lastIndexOf(el[0]);
-        let arrFromOpen = arrFromStr.slice(inOpen);
-        if (!arrFromStr.slice(inOpen).includes(el[1])) {
-          return false;
-        }
-        let inClose = arrFromOpen.indexOf(el[1]) + inOpen;
-        
-        if (arrFromStr.slice(inOpen+1, inClose).length % 2 > 0) {
-          return false;
-        }
-        arrFromStr.splice(inOpen, 1);
-        arrFromStr.splice(inClose, 1);
+  for (element of bracketsConfig) {
+    if ( str[i] === element[0]) {
       
-      } while (arrFromStr.includes(el[0]))
+      if (element[0] === element[1] && stack[stack.length-1] === element[0]) {
+          stack.pop()
+          continue;
+        }
+ 
+      stack.push(str[i])
+      continue;
+    }
 
-      arrFromStr.splice(0).concat(Array.from (str));
-    
+    if (str[i] === element[1]) {
+      if (stack.length === 0) {
+        return false;
+      }
+      if (stack[stack.length-1] === element[0]) {
+        stack.pop()
+      } else {
+        return false;
+      }
+    }
   }
-  arrFromStr.splice(0).concat(Array.from (str));
-}
+  
+ }
+ return stack.length === 0 ?  true : false;
 
-  return true;
 }
